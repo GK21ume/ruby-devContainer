@@ -1,4 +1,4 @@
-#! usr/local/bin/ruby
+#! /usr/local/bin/ruby
 # client1.ruby
 
 require 'socket'
@@ -13,6 +13,9 @@ pp cmd
 sock.puts cmd
 sock.puts "\r\n"
 
+isbody = false
+
 while line = sock.gets
-  puts line
+  puts line if isbody
+  isbody = true if line == "\r\n"
 end
