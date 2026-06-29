@@ -20,7 +20,9 @@ loop do
   s = gs.accept
 
   pp "connection"
-  server s
+  Thread.new do
+    server s
+    sleep 10
+  end
 
 end
-sleep 10
