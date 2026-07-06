@@ -4,10 +4,13 @@
 require 'socket'
 
 def server s
-  while line = s.gets
-    pp line
-    s.puts line
-    break if line == "\r\n"
+  cmd , path , ver = s.gets.split
+  if path == "/"
+    pp "index"
+    s.puts "index"
+  else
+    pp "other"
+    s.puts "other"
   end
   s.close
 end
@@ -19,7 +22,6 @@ loop do
   pp "start accept"
   s = gs.accept
 
-  pp "connection"
   Thread.new do
     server s
     sleep 10
