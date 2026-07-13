@@ -17,17 +17,31 @@ def server s
     s.print "content-Type: text/html\r\n"
     s.print "\r\n"
     s.puts "index"
+  elsif path == "/api/now"
+    s.print "HTTP/1.0 200 OK\r\n"
+        s.print "content-Type: application/json; charset=UTF-8\r\n"
+        s.print "\r\n"
+        s.puts "{"
+        s.puts '"time" :"' + "#{Time.now}" + '"'
+        s.puts "}"
   else
     file = path.slice 1..-1
     pp file
-    s.print "HTTP/1.0 200 OK\r\n"
-    s.print "content-Type: text/html\r\n"
-    s.print "\r\n"
-    File.open(file, "r") do |f|
-      while line = f.gets
-        s.puts line
-        s.puts "<br>"
+    if File.exist? file
+      File.open(file, "r") do |f|
+        s.print "HTTP/1.0 200 OK\r\n"
+        s.print "content-Type: text/plain; charset=UTF-8\r\n"
+        s.print "\r\n"
+        while line = f.gets
+          s.puts line
+        end
       end
+    else
+      s.print "HTTP/1.0 404 NotFound\r\n"
+      s.print "content-Type: text/html\r\n"
+      s.print "\r\n"
+      s.puts "<h1>404 Not Found" + '<\h1><br>'
+      s.puts "<a>" + path + " is not found in this server"
     end
 
     # pp "other"
