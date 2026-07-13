@@ -18,11 +18,20 @@ def server s
     s.print "\r\n"
     s.puts "index"
   else
-    pp "other"
+    file = path.slice 1..-1
+    pp file
     s.print "HTTP/1.0 200 OK\r\n"
     s.print "content-Type: text/html\r\n"
     s.print "\r\n"
-    s.puts "other"
+    File.open(file, "r") do |f|
+      while line = f.gets
+        s.puts line
+        s.puts "<br>"
+      end
+    end
+
+    # pp "other"
+    # s.puts "other"
   end
   s.close
 end
