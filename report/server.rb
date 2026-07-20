@@ -1,6 +1,7 @@
 #! usr/local/bin/ruby
 
-require socket
+require 'socket'
+require 'openssl'
 
 # サーバがやること
 # 1.通信開始
@@ -13,6 +14,9 @@ require socket
 
 
 def server s
+  # 鍵送信を挟む
+  crypto = s.gets
+  # ここでcryptoを復号する
   cmd , path , ver = s.gets.split " "
   if path == "/"
     pp "index"
@@ -33,15 +37,41 @@ def server s
         end
       end
     else
-      s.print "HTTP/1.0 404 NotFound\r\n"
-      s.print "content-Type: text/html\r\n"
-      s.print "\r\n"
-      s.puts "<h1>404 Not Found" + '<\h1><br>'
-      s.puts "<a>" + path + " is not found in this server"
+      File.open("NotFound.html","f") do |f|
+        s.print "HTTP/1.0 404 NotFound\r\n"
+        s.print "content-Type: text/html\r\n"
+        s.print "\r\n"
+        while line = f.gets
+          s.puts line
+        end
+      end
     end
 
     # pp "other"
     # s.puts "other"
   end
   s.close
+end
+
+# メインサーバの流れ
+# 起動
+# 鍵生成
+# ループ
+# 受信待ち
+# 受信したらスレッド分けて対応
+# ここまでループ
+#
+
+
+gs = TCPServer.open 'http'
+
+loop do
+
+  pp "start accept"
+  s = gs.accept
+
+  Thread.new do
+    server s
+  end
+
 end
